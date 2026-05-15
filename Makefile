@@ -1,7 +1,8 @@
 # 1. 编译器与选项
 CC = gcc
 CFLAGS = -Wall -Wextra -g -I./include -I/usr/include/mysql
-LDFLAGS = -lmysqlclient -lssl -lcrypto -ljwt -lpthread
+# LDFLAGS = -lmysqlclient -lssl -lcrypto -ljwt -lpthread
+LDFLAGS = -lmysqlclient -lssl -lcrypto -lpthread
 
 # 2. 目录定义
 SRC_DIR = src

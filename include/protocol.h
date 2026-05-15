@@ -1,8 +1,7 @@
 #ifndef ECLOUD_PROTOCOL_H
 #define ECLOUD_PROTOCOL_H
 
-#include <cstdint>
-#include <iterator>
+#include <stdint.h>
 #include <stdint.h>
 
 // Magic Number

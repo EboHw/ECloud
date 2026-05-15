@@ -1,0 +1,9 @@
+CompileFlags:
+  Add: 
+    - "-Iinclude"
+    - "-I/usr/include/mysql"
+    - "-Wall"
+  CompilationDatabase: "."
+
+Index:
+  Background: Build
