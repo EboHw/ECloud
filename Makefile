@@ -1,53 +1,59 @@
-# 1. 编译器与选项
-CC = gcc
-CFLAGS = -Wall -Wextra -g -I./include -I/usr/include/mysql
-# LDFLAGS = -lmysqlclient -lssl -lcrypto -ljwt -lpthread
-LDFLAGS = -lmysqlclient -lssl -lcrypto -lpthread
+CC      = gcc
+CFLAGS  = -std=c11 -Wall -Wextra -g -D_GNU_SOURCE -I include
+LDFLAGS = -lpthread
 
-# 2. 目录定义
-SRC_DIR = src
+# 定义存放中间文件和最终可执行文件的目录
 OBJ_DIR = obj
 BIN_DIR = bin
 
-# 3. 目标文件定义
-# 假设你的服务端主程序是 src/server_main.c，客户端是 src/client_main.c
+SERVER_SRCS = src/main.c \
+              src/config.c \
+              src/logger.c \
+              src/net.c \
+              src/command.c \
+              src/storage.c \
+              src/utils/str_utils.c
+
+CLIENT_SRCS = client/main.c \
+              client/cmd_parser.c \
+              src/config.c \
+              src/logger.c \
+              src/utils/str_utils.c
+
+SERVER_OBJS = $(patsubst %.c, $(OBJ_DIR)/%.o, $(SERVER_SRCS))
+CLIENT_OBJS = $(patsubst %.c, $(OBJ_DIR)/%.o, $(CLIENT_SRCS))
+
+# 定义最终生成的目标程序路径
 SERVER_TARGET = $(BIN_DIR)/file_server
 CLIENT_TARGET = $(BIN_DIR)/file_client
 
-# 自动获取所有的 .c 文件，但排除掉 client 相关的
-SERVER_SRCS = $(shell find $(SRC_DIR) -name "*.c" ! -name "client_*.c")
-# 假设客户端代码都以 client_ 开头
-CLIENT_SRCS = $(SRC_DIR)/client_main.c $(SRC_DIR)/protocol.c $(SRC_DIR)/utils.c
+# 默认编译所有目标
+all: $(SERVER_TARGET) $(CLIENT_TARGET)
 
-# 将 .c 文件路径替换为 .o 路径
-SERVER_OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SERVER_SRCS))
-CLIENT_OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(CLIENT_SRCS))
-
-# 4. 伪目标
-.PHONY: all clean setup
-
-all: setup $(SERVER_TARGET) $(CLIENT_TARGET)
-
-# 创建必要的目录
-setup:
-	@mkdir -p $(OBJ_DIR) $(BIN_DIR)
-
-# 5. 链接服务端
+# 编译服务端，加入创建 bin 目录的逻辑
 $(SERVER_TARGET): $(SERVER_OBJS)
-	$(CC) $(SERVER_OBJS) -o $@ $(LDFLAGS)
-	@echo "Successfully built Server: $@"
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-# 6. 链接客户端
+# 编译客户端，加入创建 bin 目录的逻辑
 $(CLIENT_TARGET): $(CLIENT_OBJS)
-	$(CC) $(CLIENT_OBJS) -o $@ $(LDFLAGS)
-	@echo "Successfully built Client: $@"
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $^
 
-# 7. 编译源文件为目标文件 (.c -> .o)
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+# 编译 .o 文件的通用规则
+$(OBJ_DIR)/%.o: %.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-# 8. 清理产物
+# 清理时同时删掉 obj 和 bin 目录
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
-	@echo "Cleaned up all build artifacts."
+
+# 运行规则需要同步更新路径
+run-server: $(SERVER_TARGET)
+	./$(SERVER_TARGET) -c config/server.ini
+
+run-client: $(CLIENT_TARGET)
+	./$(CLIENT_TARGET) -c config/server.ini
+
+.PHONY: all clean run-server run-client

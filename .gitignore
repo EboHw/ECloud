@@ -1,5 +1,14 @@
-server.ini
+# 编译产物
+*.o
 file_server
 file_client
-*.o
+
+# 配置文件（含密码/IP，不提交）
+config/server.ini
+config/server.ini.0.1
+
+# 运行时存储目录
 storage/
+
+# 日志
+*.log
