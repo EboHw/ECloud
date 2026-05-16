@@ -1,0 +1,39 @@
+[server]
+ip				 = 0.0.0.0		# 监听 IP
+port			 = 8888
+backlog			 = 1024
+max_conn         = 10000
+conn_timeout_sec = 30			# 时间轮超时秒数(与 WHEEL_SIZE 一致)
+
+[threadpool]
+short_worker_threads = 8		# 短命令线程池(推荐 CPU 核数 * 2)
+long_work_threads	 = 4		# 长命令线程池
+short_queue_size	 = 4096
+long_queue_size		 = 256
+
+[storage]
+root_dir		  = /data/storage
+max_file_size_mb  = 10240		# 单文件最大 10GB
+chunk_size_kb	  = 4096		# 默认分块 4MB
+quota_per_user_gb = 100
+
+[auth]
+secret_key		  = EboCloud_Super_Secret_Key_2026_#!
+token_ttl_sec	  = 86400
+max_fail_attempts = 5
+
+[database]
+host      = 127.0.0.1           # 各开发者填自己的数据库地址
+port      = 3306
+name      = file_server_db
+user      = root
+password  = 123456				# 不要提交到 git！
+pool_size = 8                   # 数据库连接池大小
+
+[log]
+# 开发环境设 DEBUG，测试设 INFO，生产设 ERROR
+level           = INFO
+dir             = /var/log/file_server
+max_size_mb     = 512
+rotate_count    = 7
+syslog_facility = local0        # rsyslog 设施标识

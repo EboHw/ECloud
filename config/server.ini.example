@@ -1,0 +1,10 @@
+[server]
+ip   = 127.0.0.1
+port = 8888
+
+[storage]
+root_dir = ./storage
+
+[log]
+# 日志级别: DEBUG=0  INFO=1  WARN=2  ERROR=3
+level = 1
