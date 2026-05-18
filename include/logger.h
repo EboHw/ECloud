@@ -46,4 +46,4 @@ void logger_close(void);
 void _log_write(log_level_t, const char *file, int line,
                 const char *func, const char *fmt, ...);
 
-#endif
+#endif /* LOGGER_H */
