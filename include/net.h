@@ -7,7 +7,7 @@
 typedef struct {
 	int			fd;
 	char		username[MAX_USERNAME_LEN];
-	char		virt_cmd[MAX_PATH_LEN];
+	char		virt_cwd[MAX_PATH_LEN];
 	uint32_t	next_seq;
 } conn_t;
 
